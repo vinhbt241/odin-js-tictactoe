@@ -1,7 +1,11 @@
 const gameController = (() => {
   const cells = document.querySelectorAll('.cell');
   const board = document.querySelector(".board");
-  let currentTurn = "x-turn";
+  const popUp = document.querySelector(".pop-up");
+  const message = document.querySelector("#message")
+  const resetButton = document.querySelector("#reset");
+  let currentTurn;
+
   const winConditions = [
     [0, 1, 2],
     [3, 4, 5],
@@ -14,11 +18,18 @@ const gameController = (() => {
   ]
 
   const startGame = () => {
+    popUp.classList.remove("show");
+
     cells.forEach(cell => {
+      cell.classList.remove("x-mark");
+      cell.classList.remove("o-mark");
       cell.addEventListener('click', event => { handleClick(event) }, { once: true });
     })
 
-    board.classList.add(currentTurn)
+    currentTurn = "x-turn";
+    board.classList.add(currentTurn);
+
+    resetButton.addEventListener('click', startGame);
   }
 
   const handleClick = (e) => {
@@ -27,11 +38,9 @@ const gameController = (() => {
     placeMark(cell, currentMark);
 
     if(checkWin(currentMark)) {
-      //End game with current mark win
-      console.log("somebody won!");
+      endGame(false);
     } else if(isDraw()) {
-      //End game with draw
-      console.log("DRAW");
+      endGame(true);
     } else {
       switchTurn();
     }
@@ -68,6 +77,16 @@ const gameController = (() => {
       }
     }
     return true;
+  }
+
+  const endGame = (draw) => {
+    if(draw) {
+      message.innerText = "Draw!";
+    } else {
+      message.innerText = `${currentTurn == "x-turn" ? "X" : "O"} win!`;
+    }
+
+    popUp.classList.add("show");
   }
 
   return{ startGame };
